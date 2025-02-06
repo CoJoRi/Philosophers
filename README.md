@@ -60,3 +60,5 @@ This project simulates philosophers sitting at a round table, alternating betwee
 - Configurable simulation parameters
 - Death detection system
 
+BONUS PART:
+https://www.backblaze.com/blog/whats-the-diff-programs-processes-and-threads/#:~:text=Computer%20processes%20are%20independent%20program,easier%20but%20requiring%20careful%20synchronization.
