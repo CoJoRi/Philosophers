@@ -6,14 +6,14 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 19:10:12 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/05 22:20:46 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:05:32 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /**
- * @brief Check if the input is a digit
+ * @brief Check if the input is a digitF
  * 
  * @param argv The input
  * @return int 1 if not a digit, 0 if it is

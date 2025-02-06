@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/05 22:20:57 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:32:04 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,12 @@ void	my_sleep(int duration);
 /*----------------------------------philo2.c---------------------------------*/
 void	release_fork(t_philo *philo);
 int		check_finish(t_philo *philo);
-int		is_alive(t_philo *philo);
 int		eat_philo(t_philo *philo);
 void	sleep_philo(t_philo *philo);
+void	think_philo(t_philo *philo);
 
 /*----------------------------------medic.c---------------------------------*/
+int		is_alive(t_philo *philo);
 void	*watch_table(void *arg);
 
 /*----------------------------------free.c-----------------------------------*/

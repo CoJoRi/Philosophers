@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/06 10:30:20 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:30:31 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	*turn(void *arg)
 		{
 			eat_philo(philo);
 			sleep_philo(philo);
-			message(philo, ORANGE"is thinking"RESET);
+			think_philo(philo);
 		}
 	}
 	return (NULL);

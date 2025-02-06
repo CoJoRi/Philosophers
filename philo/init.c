@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/05 22:47:33 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:04:42 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,16 +150,16 @@ static int	check_args(int argc, char **argv, int *argv_ctrled)
 	{
 		if (check_input(argv[i]))
 		{
-			printf("Error invalid arg:%d \n", i + 1);
+			write(2, "Error invalid arg\n", 18);
 			return (1);
 		}
 		argv_ctrled[i] = ft_atoi(argv[i]);
-		if (argv_ctrled[i] <= 0)
-			return (printf("Error Negative values\n"), 1);
+		if (argv_ctrled[i] < 0)
+			return (write(2, "Error Negative or null value\n", 29), 1);
 		i++;
 	}
 	if (argv_ctrled[0] > 200)
-		return (printf("Error Too many philosophers (max: 200)\n"), 1);
+		return (write(2, "Error Too many philosophers (max: 200)\n", 39), 1);
 	return (0);
 }
 

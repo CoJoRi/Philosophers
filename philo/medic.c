@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 12:44:51 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/06 08:47:36 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:45:06 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,10 @@ void	*watch_table(void *arg)
 		{
 			pthread_mutex_lock(&table->status);
 			if (table->eat_max_ok == table->nb_philo)
+			{
+				printf("max meal at: %ld\n", get_time(&table->philos[i]));
 				table->finish = 1;
+			}
 			pthread_mutex_unlock(&table->status);
 			if (is_alive(&table->philos[i]) == 0)
 				return (NULL);

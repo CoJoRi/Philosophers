@@ -6,7 +6,7 @@
 #    By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/29 09:00:39 by jrinaudo          #+#    #+#              #
-#    Updated: 2025/02/05 12:46:55 by jrinaudo         ###   ########.fr        #
+#    Updated: 2025/02/06 14:39:20 by jrinaudo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ all:		${NAME}
 bonus:		all
 
 val:		${NAME}
-			@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 410 200 200
+			@valgrind --tool=helgrind ./$(NAME) 4 8000 200 200 4
 
 run:		${NAME}
 			@./$(NAME) $(ARGS)
