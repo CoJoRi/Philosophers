@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 12:44:51 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/06 08:47:36 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 14:01:50 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,33 +23,7 @@
  * @param philo A pointer to the philosopher structure.
  * @return 1 if the philosopher is alive, 0 if the philosopher is dead.
  */
-int	is_alive(t_philo *philo)
-{
-	long	time;
-	long	time_die;
 
-	pthread_mutex_lock(&philo->table->status);
-	if (philo->table->finish || philo->dead)
-	{
-		pthread_mutex_unlock(&philo->table->status);
-		return (0);
-	}
-	pthread_mutex_unlock(&philo->table->status);
-	pthread_mutex_lock(&philo->mut_last_meal);
-	time = get_time(philo) - philo->last_eat;
-	time_die = philo->time_die;
-	pthread_mutex_unlock(&philo->mut_last_meal);
-	if (time > time_die)
-	{
-		message(philo, RED"died"RESET);
-		pthread_mutex_lock(&philo->table->status);
-		philo->table->finish = 1;
-		philo->dead = 1;
-		pthread_mutex_unlock(&philo->table->status);
-		return (0);
-	}
-	return (1);
-}
 
 /**
  * @brief Monitors the state of the philosophers at the table.
@@ -73,10 +47,8 @@ void	*watch_table(void *arg)
 	{
 		while (i < table->nb_philo)
 		{
-			pthread_mutex_lock(&table->status);
 			if (table->eat_max_ok == table->nb_philo)
 				table->finish = 1;
-			pthread_mutex_unlock(&table->status);
 			if (is_alive(&table->philos[i]) == 0)
 				return (NULL);
 			i++;

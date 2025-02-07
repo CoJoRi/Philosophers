@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:12:08 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/05 12:48:40 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 09:38:59 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,22 +53,3 @@ int	ft_atoi(const char *str)
 	return (nb * sign);
 }
 
-/**
- * @brief Get the current time in milliseconds since the philosopher started.
- *
- * This function retrieves the current time using the gettimeofday function,
- * calculates the time elapsed since the philosopher started, and returns it
- * in milliseconds.
- *
- * @param philo A pointer to the philosopher structure containing the start time.
- * @return The current time in milliseconds since the philosopher started.
- */
-long	get_time(t_philo *philo)
-{
-	long			time_now;
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	time_now = (tv.tv_sec * 1000 + tv.tv_usec / 1000) - philo->time_start;
-	return (time_now);
-}

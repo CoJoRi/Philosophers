@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/06 11:44:56 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 13:47:34 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,16 @@
 # define PHILO_H
 
 # include <stdio.h>
-# include <pthread.h>
 # include <unistd.h>
 # include <stdlib.h>
-# include <string.h>
 # include <sys/time.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <fcntl.h>
 # include <semaphore.h>
+# include <pthread.h>
+# include <signal.h>
 
 # define INT_MAX	2147483647
 # define INT_MIN	-2147483648
@@ -42,24 +45,26 @@ typedef struct s_table	t_table;
 struct s_philo
 {
 	int				id;
-	long			time_start;
+	pid_t			pid_philo;
 	long			last_eat;
 	int				nb_eat;
-	int				eat_max;
 	int				dead;
-	int				took_l_fork;
-	int				took_r_fork;
+	int				forks_in_hand;
+	int				eat_enough;
+	t_table			*table;
 };
 struct s_table
 {
+	int				nb_philo;
 	long			time_start;
 	int				time_die;
 	int				time_eat;
 	int				time_sleep;
-	int				nb_philo;
+	int				eat_limit;
 	int				eat_max_ok;
 	int				finish;
-	pthread_t		medic;
+	sem_t			*forks;
+	sem_t			*message;
 	t_philo			philos[200];
 };
 
@@ -73,23 +78,22 @@ tv_sec * 1000 + tv_usec / 1000 → Gives time in milliseconds.
 */
 /*----------------------------------main.c-----------------------------------*/
 int		main(int argc, char **argv);
-long	init_time_start(void);
 
 /*----------------------------------init.c-----------------------------------*/
 int		init_table(t_table *table, char **argv, int argc);
 
-/*----------------------------------init2.c----------------------------------*/
-void	init_times(t_table *table);
-int		check_input(char *argv);
+/*----------------------------------time.c----------------------------------*/
+long	get_time_elapsed(long time_start);
+long	clock(void);
+void	my_sleep(int duration);
+
 
 /*----------------------------------utils1.c---------------------------------*/
 int		ft_atoi(const char *str);
-long	get_time(t_philo *philo);
 
 /*----------------------------------philo.c----------------------------------*/
-void	*turn(void	*args);
+void	*to_be_or_not_to_be(void	*args);
 void	message(t_philo *philo, char *msg);
-void	my_sleep(int duration);
 
 /*----------------------------------philo2.c---------------------------------*/
 void	release_fork(t_philo *philo);
