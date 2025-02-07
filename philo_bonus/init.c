@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/07 11:55:34 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 22:01:31 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	check_input(char *argv)
 	return (0);
 }
 
-static int	init_philos(t_table *table, int *argv, int argc)
+static int	init_philos(t_table *table)
 {
 	int		i;
 
@@ -35,7 +35,7 @@ static int	init_philos(t_table *table, int *argv, int argc)
 	{
 		table->philos[i].id = i;		
 		table->philos[i].pid_philo = 0;
-		table->philos[i].last_eat = 0;
+		table->philos[i].last_eat = clock();
 		table->philos[i].nb_eat = 0;
 		table->philos[i].dead = 0;
 		table->philos[i].forks_in_hand = 0;
@@ -67,20 +67,20 @@ static int	check_args(int argc, char **argv, int *argv_ctrled)
 	return (0);
 }
 
-static int	init_cemaphors(t_table *table)
+static int	init_semaphors(t_table *table)
 {
 	sem_unlink("/message_semaphore");
 	sem_unlink("/baguette");
 	table->message = sem_open("/message_semaphore", O_CREAT, 0644, 1);
 	if (table->message == SEM_FAILED)
 	{
-		perror("Error: sem_open failed");
+		write(2, "Error: sem_open failed", 22);
 		return (1);
 	}
 	table->forks = sem_open("/baguette", O_CREAT, 0644, table->nb_philo);
 	if (table->forks == SEM_FAILED)
 	{
-		perror("Error: sem_open failed");
+		write(2, "Error: sem_open failed", 22);
 		return (1);
 	}
 	return (0);
@@ -89,7 +89,6 @@ static int	init_cemaphors(t_table *table)
 int	init_table(t_table *table, char**argv, int argc)
 {
 	int	argvctrled[5];
-	sem_t *semaphore;
 
 	if (check_args(argc, argv, argvctrled))
 		return (1);
@@ -103,9 +102,9 @@ int	init_table(t_table *table, char**argv, int argc)
 		table->eat_limit = -1;
 	table->finish = 0;
 	table->eat_max_ok = 0;
-	if (init_cemaphors(table))
+	if (init_semaphors(table))
 		return (1);
-	if (init_philos(table, argvctrled, argc - 1))
+	if (init_philos(table))
 		return (1);
 	table->time_start = clock();
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 12:44:51 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/07 14:01:50 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 18:34:03 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,10 @@
 void	*watch_table(void *arg)
 {
 	t_table	*table;
-	int		i;
-
+	
 	table = (t_table *)arg;
-	i = 0;
-	while (1)
-	{
-		while (i < table->nb_philo)
-		{
-			if (table->eat_max_ok == table->nb_philo)
-				table->finish = 1;
-			if (is_alive(&table->philos[i]) == 0)
-				return (NULL);
-			i++;
-		}
-		i = 0;
-	}
+
+	sem_wait(table->is_dead);
+	kill(0, SIGINT);
 	return (NULL);
 }

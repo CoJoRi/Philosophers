@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/07 14:00:22 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/07 21:52:56 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,19 @@ static void	print_finish(t_table *table)
 
 int	main(int argc, char **argv)
 {
-	t_table	table;
-	//pthread_t	medic;
-	int		i;
+	t_table		table;
+	int			i;
+	int			status;
+	int			all_eat;
+	pid_t		pid;
 
+	status = 0;
+	all_eat = 0;
+	i = 0;
 	if (argc < 5)
 		return (write(2, "Error args -> need 4 minimum\n", 21), 1);
-	i = 0;
 	if (init_table(&table, argv + 1, argc - 1))
 		return (1);
-	//pthread_create(&medic, NULL, watch_table, &table);
 	while (i < table.nb_philo)
 	{
 		table.philos[i].pid_philo = fork();
@@ -54,7 +57,46 @@ int	main(int argc, char **argv)
 	}
 	i = 0;
 	while (i < table.nb_philo)
-		waitpid(table.philos[i++].pid_philo, NULL, 0);
+	{
+		pid = waitpid(-1, &status, 0); // 🔄 Attend n'importe quel philosophe
+
+		if (pid == -1) // 🔴 Sécurité : Si erreur dans waitpid(), on stoppe tout
+			break;
+
+		if (WIFEXITED(status)) 
+		{
+			if (WEXITSTATUS(status) == 1) 
+			{
+				// 🛑 Un philosophe est mort → On tue immédiatement les autres
+				kill(0, SIGINT);
+				break;
+			}
+			else if (WEXITSTATUS(status) == 0) 
+			{
+				// ✅ Un philosophe a fini normalement
+				all_eat++;
+			}
+		}
+
+		if (all_eat == table.nb_philo) // 📌 Tous les philosophes ont mangé
+			break;
+
+		i++;
+	}
+	/* while (i < table.nb_philo)
+	{
+		waitpid(-1, &status, 0);
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+			all_eat ++;
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
+			break;
+		if (all_eat == table.nb_philo)
+			break;
+	} */
+	sem_wait(table.message);
+	printf("fin atteinte");
+	sem_post(table.message);
+	kill(0, SIGINT);
 	print_finish(&table);
 	sem_close(table.forks);
 	sem_unlink("/baguette");

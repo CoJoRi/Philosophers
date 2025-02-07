@@ -6,7 +6,7 @@
 #    By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/07 09:10:33 by jrinaudo          #+#    #+#              #
-#    Updated: 2025/02/07 10:57:19 by jrinaudo         ###   ########.fr        #
+#    Updated: 2025/02/07 19:26:54 by jrinaudo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,8 @@ SRCS	:=	init.c main.c philo.c time.c utils1.c
 OBJS	:= $(SRCS:.c=.o)
 
 .c.o:
-#	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}
-	@${CC} -g -c $< -o ${<:.c=.o}
+	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}
+
 ################################################################################
 #                                  Makefile  objs                              #
 ################################################################################
@@ -39,8 +39,7 @@ RM		    := rm -f
 
 ${NAME}:	${OBJS}
 			@echo "$(GREEN)Compilation ${CLR_RMV}of ${YELLOW}$(NAME) ${CLR_RMV}..."
-			@${CC} -g -o ${NAME} ${OBJS}
-#			@${CC} ${FLAGS} -o ${NAME} ${OBJS}
+			@${CC} ${FLAGS} -o ${NAME} ${OBJS}
 			@echo "$(GREEN)$(NAME) created[0m ✔️"
 
 all:		${NAME}
