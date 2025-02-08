@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 17:03:54 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 20:52:06 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,13 @@ WEXITSTATUS(status)	Récupère la valeur passée à exit()
 void	create_philosophers(t_table *table)
 {
 	int	i;
+	pid_t	pid;
 
 	i = 0;
 	while (i < table->nb_philo)
 	{
-		table->philos[i].pid_philo = fork();
-		if (table->philos[i].pid_philo == 0)
+		pid = fork();
+		if (pid == 0)
 			to_be_or_not_to_be(&table->philos[i]);
 		i++;
 	}
