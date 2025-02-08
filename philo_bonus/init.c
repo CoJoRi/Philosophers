@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 17:02:45 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 22:23:50 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ static int	init_philos(t_table *table)
 	while (++i < table->nb_philo)
 	{
 		table->philos[i].id = i;
-		table->philos[i].pid_philo = 0;
 		table->philos[i].last_eat = clock();
 		table->philos[i].nb_eat = 0;
 		table->philos[i].dead = 0;

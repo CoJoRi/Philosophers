@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 17:17:05 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 22:23:16 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ typedef struct s_table	t_table;
 struct s_philo
 {
 	int				id;
-	pid_t			pid_philo;
 	long			last_eat;
 	int				nb_eat;
 	int				dead;

@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 20:52:06 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 22:23:19 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ int	main(int argc, char **argv)
 	printf("_______________________________________\n");
 	while (i < table.nb_philo)
 	{
-		printf("philos[%d].pid_philo = %d\n", i, table.philos[i].pid_philo);
 		printf("philos[%d].last_eat = %ld\n", i, table.philos[i].last_eat);
 		printf("philos[%d].nb_eat = %d\n", i, table.philos[i].nb_eat);
 		printf("philos[%d].dead = %d\n", i, table.philos[i].dead);
