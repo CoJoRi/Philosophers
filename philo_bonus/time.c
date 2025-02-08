@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 19:10:12 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/07 11:00:58 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 10:21:08 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,28 @@ long	clock(void)
 
 long	get_time_elapsed(long time_start)
 {
-	long	time_now;
-
-	time_now = clock();
-	return (time_now - time_start);
+	return (clock() - time_start);
 }
 
-void	my_sleep(int duration)
+void	my_sleep(int duration, t_philo *philo)
 {
 	long	time;
 
 	time = clock();
 	while ((clock() - time) < duration)
-		usleep(50);
+	{
+		if (!is_alive(philo))
+		{
+			release_fork(philo);
+			exit(1);
+		}
+		usleep(10);
+	}
 }
+/* {
+	long	time;
+
+	time = clock();
+	while ((clock() - time) < duration)
+		usleep(10);
+} */

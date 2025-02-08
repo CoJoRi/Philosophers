@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/07 19:36:51 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 10:19:28 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ int		init_table(t_table *table, char **argv, int argc);
 /*----------------------------------time.c----------------------------------*/
 long	get_time_elapsed(long time_start);
 long	clock(void);
-void	my_sleep(int duration);
+//void	my_sleep(int duration);
+void	my_sleep(int duration, t_philo *philo);
 
 
 /*----------------------------------utils1.c---------------------------------*/

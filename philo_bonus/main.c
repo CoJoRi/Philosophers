@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/07 21:52:56 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 10:07:53 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	main(int argc, char **argv)
 	int			i;
 	int			status;
 	int			all_eat;
-	pid_t		pid;
+	//pid_t		pid;
 
 	status = 0;
 	all_eat = 0;
@@ -56,7 +56,7 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	i = 0;
-	while (i < table.nb_philo)
+	/* while (i < table.nb_philo)
 	{
 		pid = waitpid(-1, &status, 0); // 🔄 Attend n'importe quel philosophe
 
@@ -67,13 +67,12 @@ int	main(int argc, char **argv)
 		{
 			if (WEXITSTATUS(status) == 1) 
 			{
-				// 🛑 Un philosophe est mort → On tue immédiatement les autres
+				write(1, "Error in a philo die\n", 21);
 				kill(0, SIGINT);
 				break;
 			}
 			else if (WEXITSTATUS(status) == 0) 
 			{
-				// ✅ Un philosophe a fini normalement
 				all_eat++;
 			}
 		}
@@ -82,19 +81,35 @@ int	main(int argc, char **argv)
 			break;
 
 		i++;
-	}
-	/* while (i < table.nb_philo)
+	} */
+	while (i < table.nb_philo)
 	{
 		waitpid(-1, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+		{
+			sem_wait(table.message);
+			write(1, "un philosophe a fini de manger\n", 31);
+			sem_post(table.message);
 			all_eat ++;
+		}
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
+		{
+			sem_wait(table.message);
+			write(1, "un philosophe est mort\n", 24);
+			sem_post(table.message);
 			break;
+		}
 		if (all_eat == table.nb_philo)
+		{
+			sem_wait(table.message);
+			write(1, "tous les philosophes ont fini de manger\n", 41);
+			sem_post(table.message);
+
 			break;
-	} */
+		}
+	}
 	sem_wait(table.message);
-	printf("fin atteinte");
+	printf("\n\t"GREEN"fin atteinte"RESET"\n");
 	sem_post(table.message);
 	kill(0, SIGINT);
 	print_finish(&table);
