@@ -6,35 +6,13 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 14:03:43 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:15:38 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_alive(t_philo *philo)
-{
-	long	duration;
-	duration = clock() - philo->last_eat;
-	if (duration > philo->table->time_die)
-	{
-		message(philo, RED"died"RESET);
-		release_fork(philo);
-		return (0);
-	}
-	return (1);
-}
-
-void	release_fork(t_philo *philo)
-{
-	while (philo->forks_in_hand)
-	{
-		sem_post(philo->table->forks);
-		philo->forks_in_hand--;
-	}
-}
-
-static int	take_fork(t_philo *philo)
+int	take_fork(t_philo *philo)
 {
 	if (philo->table->nb_philo == 1 && philo->forks_in_hand == 1)
 	{
@@ -80,6 +58,12 @@ int	eat_philo(t_philo *philo)
 	return (0);
 }
 
+void	sleep_philo(t_philo *philo)
+{
+	message(philo, YELLOW"is sleeping"RESET);
+	my_sleep(philo->table->time_sleep, philo);
+}
+
 void	*to_be_or_not_to_be(void *arg)
 {
 	t_philo	*philo;
@@ -102,8 +86,7 @@ void	*to_be_or_not_to_be(void *arg)
 		if (philo->forks_in_hand == 2)
 		{
 			eat_philo(philo);
-			message(philo, YELLOW"is sleeping"RESET);
-			my_sleep(philo->table->time_sleep, philo);
+			sleep_philo(philo);
 			message(philo, ORANGE"is thinking"RESET);
 		}
 	}

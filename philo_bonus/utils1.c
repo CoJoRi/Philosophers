@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:12:08 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/07 09:38:59 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:17:49 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,3 @@ int	ft_atoi(const char *str)
 		return (0);
 	return (nb * sign);
 }
-

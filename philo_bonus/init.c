@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 09:50:31 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:02:45 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	init_philos(t_table *table)
 	i = -1;
 	while (++i < table->nb_philo)
 	{
-		table->philos[i].id = i;		
+		table->philos[i].id = i;
 		table->philos[i].pid_philo = 0;
 		table->philos[i].last_eat = clock();
 		table->philos[i].nb_eat = 0;
@@ -58,10 +58,12 @@ static int	check_args(int argc, char **argv, int *argv_ctrled)
 			return (1);
 		}
 		argv_ctrled[i] = ft_atoi(argv[i]);
-		if (argv_ctrled[i] <= 0)
-			return (write(2, "Error Negative or null value\n", 29), 1);
+		if (argv_ctrled[i] < 0)
+			return (write(2, "Error Negative value\n", 21), 1);
 		i++;
 	}
+	if (argv_ctrled[0] == 0)
+		return (write(2, "Error Not enough philosophers (min: 1)\n", 40), 1);
 	if (argv_ctrled[0] > 200)
 		return (write(2, "Error Too many philosophers (max: 200)\n", 39), 1);
 	return (0);
@@ -71,6 +73,7 @@ static int	init_semaphors(t_table *table)
 {
 	sem_unlink("/message_semaphore");
 	sem_unlink("/baguette");
+	sem_unlink("/dead_status");
 	table->message = sem_open("/message_semaphore", O_CREAT, 0644, 1);
 	if (table->message == SEM_FAILED)
 	{
@@ -79,6 +82,12 @@ static int	init_semaphors(t_table *table)
 	}
 	table->forks = sem_open("/baguette", O_CREAT, 0644, table->nb_philo);
 	if (table->forks == SEM_FAILED)
+	{
+		write(2, "Error: sem_open failed", 22);
+		return (1);
+	}
+	table->dead = sem_open("/dead_status", O_CREAT, 0644, 1);
+	if (table->dead == SEM_FAILED)
 	{
 		write(2, "Error: sem_open failed", 22);
 		return (1);

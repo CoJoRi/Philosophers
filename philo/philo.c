@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/06 19:30:31 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:31:59 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void	*turn(void *arg)
 	philo = (t_philo *)arg;
 	while (check_finish(philo) == 0)
 	{
-		if (philo->id % 2 == 0)
+		if (philo->id % 2)
 		{
 			take_right_fork(philo);
 			take_left_fork(philo);

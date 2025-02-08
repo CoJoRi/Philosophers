@@ -6,7 +6,7 @@
 #    By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/07 09:10:33 by jrinaudo          #+#    #+#              #
-#    Updated: 2025/02/07 19:26:54 by jrinaudo         ###   ########.fr        #
+#    Updated: 2025/02/08 17:15:56 by jrinaudo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ FLAGS	:= -Wall -Wextra -Werror -g
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
 ################################################################################
-SRCS	:=	init.c main.c philo.c time.c utils1.c
+SRCS	:=	init.c main.c philo.c philo2.c time.c utils1.c
 OBJS	:= $(SRCS:.c=.o)
 
 .c.o:

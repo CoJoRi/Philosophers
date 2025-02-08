@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 13:43:46 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:17:05 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ struct s_table
 	int				finish;
 	sem_t			*forks;
 	sem_t			*message;
+	sem_t			*dead;
 	t_philo			philos[200];
 };
 
@@ -86,23 +87,21 @@ int		init_table(t_table *table, char **argv, int argc);
 /*----------------------------------time.c----------------------------------*/
 long	get_time_elapsed(long time_start);
 long	clock(void);
-//void	my_sleep(int duration);
 void	my_sleep(int duration, t_philo *philo);
-
 
 /*----------------------------------utils1.c---------------------------------*/
 int		ft_atoi(const char *str);
 
 /*----------------------------------philo.c----------------------------------*/
-void	*to_be_or_not_to_be(void	*args);
+int		take_fork(t_philo *philo);
 void	message(t_philo *philo, char *msg);
-
-/*----------------------------------philo2.c---------------------------------*/
-void	release_fork(t_philo *philo);
-int		check_finish(t_philo *philo);
-int		is_alive(t_philo *philo);
 int		eat_philo(t_philo *philo);
 void	sleep_philo(t_philo *philo);
+void	*to_be_or_not_to_be(void	*args);
+
+/*----------------------------------philo2.c---------------------------------*/
+int		is_alive(t_philo *philo);
+void	release_fork(t_philo *philo);
 
 /*----------------------------------medic.c---------------------------------*/
 void	*watch_table(void *arg);

@@ -6,20 +6,23 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 13:49:43 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 17:03:54 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
- waitpid(-1, &status, 0);	Attend qu'un enfant se termine et stocke son état dans status.
+ waitpid(-1, &status, 0);	Attend qu'un enfant se termine et stocke son état
+ dans status.
 WIFEXITED(status)	Vérifie si l'enfant s'est terminé avec exit().
 WEXITSTATUS(status)	Récupère la valeur passée à exit()
  */
 void	create_philosophers(t_table *table)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (i < table->nb_philo)
 	{
 		table->philos[i].pid_philo = fork();
@@ -31,9 +34,9 @@ void	create_philosophers(t_table *table)
 
 int	monitor_philosophers(t_table *table)
 {
-	int	i = 0;
+	int	i;
 	int	status;
-	int	all_eat = 0;
+	int	all_eat;
 
 	i = 0;
 	all_eat = 0;
@@ -45,10 +48,12 @@ int	monitor_philosophers(t_table *table)
 			if (WEXITSTATUS(status) == 0)
 				all_eat++;
 			else if (WEXITSTATUS(status) == 1)
-				return (printf(BG_WHITE BLUE "un est mort" RESET "\n"), 1);
+				return (printf("\n\t"BG_WHITE BLUE
+						" Someone died....RIP him " RESET "\n"), 1);
 		}
 		if (all_eat == table->nb_philo)
-			return (printf(BG_WHITE BLUE "tous ont fini de manger" RESET "\n"), 0);
+			return (printf("\n\t"BG_WHITE BLUE
+					" all have eat " RESET "\n"), 0);
 		i++;
 	}
 	return (0);
@@ -60,6 +65,8 @@ void	cleanup_resources(t_table *table)
 	sem_unlink("/baguette");
 	sem_close(table->message);
 	sem_unlink("/message_semaphore");
+	sem_close(table->dead);
+	sem_unlink("/dead");
 }
 
 int	main(int argc, char **argv)
