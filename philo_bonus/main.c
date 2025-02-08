@@ -6,119 +6,85 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 10:07:53 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 13:49:43 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	print_finish(t_table *table)
+/*
+ waitpid(-1, &status, 0);	Attend qu'un enfant se termine et stocke son état dans status.
+WIFEXITED(status)	Vérifie si l'enfant s'est terminé avec exit().
+WEXITSTATUS(status)	Récupère la valeur passée à exit()
+ */
+void	create_philosophers(t_table *table)
 {
-	int	i;
-
-	i = 0;
-	printf(GREEN"\n\t_______________________\n"RESET);
-	printf(GREEN"\t|                     |\n"RESET);
-	printf(GREEN"\t|  the dinner is over |\n"RESET);
-	printf(GREEN"\t|_____________________|\n"RESET);
+	int i = 0;
 	while (i < table->nb_philo)
 	{
-		printf("\t  %d has eaten %d times", i,
-			table->philos[i].nb_eat);
-		if (table->philos[i].dead)
-			printf(" but died... RIP Him\n");
-		else
-			printf("\n");
+		table->philos[i].pid_philo = fork();
+		if (table->philos[i].pid_philo == 0)
+			to_be_or_not_to_be(&table->philos[i]);
 		i++;
 	}
+}
+
+int	monitor_philosophers(t_table *table)
+{
+	int	i = 0;
+	int	status;
+	int	all_eat = 0;
+
+	i = 0;
+	all_eat = 0;
+	while (i < table->nb_philo)
+	{
+		waitpid(-1, &status, 0);
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) == 0)
+				all_eat++;
+			else if (WEXITSTATUS(status) == 1)
+				return (printf(BG_WHITE BLUE "un est mort" RESET "\n"), 1);
+		}
+		if (all_eat == table->nb_philo)
+			return (printf(BG_WHITE BLUE "tous ont fini de manger" RESET "\n"), 0);
+		i++;
+	}
+	return (0);
+}
+
+void	cleanup_resources(t_table *table)
+{
+	sem_close(table->forks);
+	sem_unlink("/baguette");
+	sem_close(table->message);
+	sem_unlink("/message_semaphore");
 }
 
 int	main(int argc, char **argv)
 {
-	t_table		table;
-	int			i;
-	int			status;
-	int			all_eat;
-	//pid_t		pid;
+	t_table	table;
 
-	status = 0;
-	all_eat = 0;
-	i = 0;
 	if (argc < 5)
-		return (write(2, "Error args -> need 4 minimum\n", 21), 1);
+		return (write(2, "Error args -> need 4 minimum\n", 29), 1);
 	if (init_table(&table, argv + 1, argc - 1))
 		return (1);
-	while (i < table.nb_philo)
-	{
-		table.philos[i].pid_philo = fork();
-		if (table.philos[i].pid_philo == 0)
-			to_be_or_not_to_be(&table.philos[i]);
-		i++;
-	}
-	i = 0;
-	/* while (i < table.nb_philo)
-	{
-		pid = waitpid(-1, &status, 0); // 🔄 Attend n'importe quel philosophe
-
-		if (pid == -1) // 🔴 Sécurité : Si erreur dans waitpid(), on stoppe tout
-			break;
-
-		if (WIFEXITED(status)) 
-		{
-			if (WEXITSTATUS(status) == 1) 
-			{
-				write(1, "Error in a philo die\n", 21);
-				kill(0, SIGINT);
-				break;
-			}
-			else if (WEXITSTATUS(status) == 0) 
-			{
-				all_eat++;
-			}
-		}
-
-		if (all_eat == table.nb_philo) // 📌 Tous les philosophes ont mangé
-			break;
-
-		i++;
-	} */
-	while (i < table.nb_philo)
-	{
-		waitpid(-1, &status, 0);
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-		{
-			sem_wait(table.message);
-			write(1, "un philosophe a fini de manger\n", 31);
-			sem_post(table.message);
-			all_eat ++;
-		}
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 1)
-		{
-			sem_wait(table.message);
-			write(1, "un philosophe est mort\n", 24);
-			sem_post(table.message);
-			break;
-		}
-		if (all_eat == table.nb_philo)
-		{
-			sem_wait(table.message);
-			write(1, "tous les philosophes ont fini de manger\n", 41);
-			sem_post(table.message);
-
-			break;
-		}
-	}
-	sem_wait(table.message);
-	printf("\n\t"GREEN"fin atteinte"RESET"\n");
-	sem_post(table.message);
-	kill(0, SIGINT);
-	print_finish(&table);
-	sem_close(table.forks);
-	sem_unlink("/baguette");
-	sem_close(table.message);
-	sem_unlink("/message_semaphore");
+	printf(GREEN"\n\t_______________________\n"RESET);
+	printf(GREEN"\t|                     |\n"RESET);
+	printf(GREEN"\t|     Bon Appetit     |\n"RESET);
+	printf(GREEN"\t|_____________________|\n"RESET);
+	create_philosophers(&table);
+	if (monitor_philosophers(&table))
+		kill(0, SIGINT);
+	printf(GREEN"\n\t_______________________\n"RESET);
+	printf(GREEN"\t|                     |\n"RESET);
+	printf(GREEN"\t|  the dinner is over |\n"RESET);
+	printf(GREEN"\t|_____________________|\n"RESET);
+	cleanup_resources(&table);
 	return (0);
 }
+
 /* controle des valeurs de la structure table
 	printf("nb_philo = %d\n", table.nb_philo);
 	printf("time_start = %ld\n", table.time_start);

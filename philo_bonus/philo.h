@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:01:34 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 10:19:28 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 13:43:46 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 # define GREY		"\033[1;30m"
 # define GREY2		"\033[0;30m"
 # define ORANGE		"\033[38;5;214m"
+# define CYAN		"\033[1;36m"
 
 typedef struct s_philo	t_philo;
 typedef struct s_table	t_table;

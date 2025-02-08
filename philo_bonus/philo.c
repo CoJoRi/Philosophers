@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 10:20:45 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/08 14:03:43 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int	is_alive(t_philo *philo)
 	duration = clock() - philo->last_eat;
 	if (duration > philo->table->time_die)
 	{
-		printf("%ld since the last dinner of philo %d\n", duration, philo->id);
 		message(philo, RED"died"RESET);
 		release_fork(philo);
 		return (0);
@@ -70,16 +69,13 @@ int	eat_philo(t_philo *philo)
 		exit (1);
 	message(philo, GREEN"is eating"RESET);
 	philo->last_eat = clock();
-	printf("philo %d last eat updated : %ld\n", philo->id, philo->last_eat - philo->table->time_start);
 	my_sleep(philo->table->time_eat, philo);
 	philo->nb_eat++;
 	if (philo->nb_eat == philo->table->eat_limit)
 	{
 		release_fork(philo);
-		printf("philo %d has eaten enough\n", philo->id);
 		exit (0);
 	}
-	//philo->last_eat = get_time_elapsed(philo->table->time_start);
 	release_fork(philo);
 	return (0);
 }
@@ -92,7 +88,10 @@ void	*to_be_or_not_to_be(void *arg)
 	while (1)
 	{
 		if (philo->id % 2 == 1)
-			my_sleep(philo->table->time_eat - 1, philo);
+		{
+			message(philo, ORANGE"is thinking"RESET);
+			my_sleep(1, philo);
+		}
 		take_fork(philo);
 		if (!is_alive(philo))
 		{
