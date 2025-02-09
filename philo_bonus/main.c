@@ -6,21 +6,26 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 22:23:19 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/09 21:45:35 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*
- waitpid(-1, &status, 0);	Attend qu'un enfant se termine et stocke son état
- dans status.
-WIFEXITED(status)	Vérifie si l'enfant s'est terminé avec exit().
-WEXITSTATUS(status)	Récupère la valeur passée à exit()
+/**
+ * Creates child processes for each philosopher at the table
+ * using fork(). Each philosopher runs in their own process
+ * executing the to_be_or_not_to_be function.
+ *
+ * @param table Pointer to the table structure containing
+ *              philosopher information and settings
+ * 
+ * @note The parent process continues creating philosophers while
+ *       child processes execute philosopher logic
  */
 void	create_philosophers(t_table *table)
 {
-	int	i;
+	int		i;
 	pid_t	pid;
 
 	i = 0;
@@ -33,6 +38,25 @@ void	create_philosophers(t_table *table)
 	}
 }
 
+/**
+ * @brief Monitors the status of philosopher processes
+ *
+ * This function waits for all philosopher processes to finish and checks their
+ *  exit status.
+ * It tracks two conditions:
+ * 1. If all philosophers have finished eating their required meals
+ * 2. If any philosopher has died
+ *
+ * @param table Pointer to the table structure containing simulation parameters
+ *
+ * @return 0 if all philosophers finished eating successfully
+ *         1 if a philosopher died during the simulation
+ *
+ * waitpid(-1, &status, 0);	Attend qu'un enfant se termine et stocke son état
+ * dans status.
+ * WIFEXITED(status)	Vérifie si l'enfant s'est terminé avec exit().
+ * WEXITSTATUS(status)	Récupère la valeur passée à exit()
+ */
 int	monitor_philosophers(t_table *table)
 {
 	int	i;
@@ -60,6 +84,17 @@ int	monitor_philosophers(t_table *table)
 	return (0);
 }
 
+/**
+ * Performs cleanup of semaphore resources used by the dining philosophers
+ *  program
+ * Closes and unlinks all semaphores used for:
+ * - Forks/baguettes
+ * - Message printing
+ * - Death status tracking
+ * 
+ * @param table Pointer to the table structure containing semaphore handles
+ * @return void
+ */
 void	cleanup_resources(t_table *table)
 {
 	sem_close(table->forks);
@@ -70,6 +105,22 @@ void	cleanup_resources(t_table *table)
 	sem_unlink("/dead");
 }
 
+/**
+ * @brief Main function for the Dining Philosophers problem simulation
+ * 
+ * Initializes and manages the dining philosophers simulation.
+ * The program requires at least 4 command line arguments to run properly.
+ * It sets up the table, creates philosophers processes, monitors their
+ *  activities, and ensures proper cleanup of resources.
+ * 
+ * @param argc Number of command line arguments
+ * @param argv Array of command line argument strings
+ * 
+ * @return int Returns 0 on successful execution, 1 on error
+ *             Error cases:
+ *             - Insufficient command line arguments
+ *             - Table initialization failure
+ */
 int	main(int argc, char **argv)
 {
 	t_table	table;
@@ -78,40 +129,15 @@ int	main(int argc, char **argv)
 		return (write(2, "Error args -> need 4 minimum\n", 29), 1);
 	if (init_table(&table, argv + 1, argc - 1))
 		return (1);
-	printf(GREEN"\n\t_______________________\n"RESET);
-	printf(GREEN"\t|                     |\n"RESET);
+	printf(GREEN"\t_______________________\n"RESET);
 	printf(GREEN"\t|     Bon Appetit     |\n"RESET);
 	printf(GREEN"\t|_____________________|\n"RESET);
 	create_philosophers(&table);
 	if (monitor_philosophers(&table))
 		kill(0, SIGINT);
-	printf(GREEN"\n\t_______________________\n"RESET);
-	printf(GREEN"\t|                     |\n"RESET);
+	printf(GREEN"\t_______________________\n"RESET);
 	printf(GREEN"\t|  the dinner is over |\n"RESET);
 	printf(GREEN"\t|_____________________|\n"RESET);
 	cleanup_resources(&table);
 	return (0);
 }
-
-/* controle des valeurs de la structure table
-	printf("nb_philo = %d\n", table.nb_philo);
-	printf("time_start = %ld\n", table.time_start);
-	printf("time_die = %d\n", table.time_die);
-	printf("time_eat = %d\n", table.time_eat);
-	printf("time_sleep = %d\n", table.time_sleep);
-	printf("eat_limit = %d\n", table.eat_limit);
-	printf("eat_max_ok = %d\n", table.eat_max_ok);
-	printf("finish = %d\n", table.finish);
-	printf("forks = %p\n", table.forks);
-	printf("message = %p\n", table.message);
-	printf("philos = %p\n", table.philos);
-	printf("_______________________________________\n");
-	while (i < table.nb_philo)
-	{
-		printf("philos[%d].last_eat = %ld\n", i, table.philos[i].last_eat);
-		printf("philos[%d].nb_eat = %d\n", i, table.philos[i].nb_eat);
-		printf("philos[%d].dead = %d\n", i, table.philos[i].dead);
-		printf("philos[%d].eat_enough = %d\n", i, table.philos[i].eat_enough);
-		i++;
-	}
- */

@@ -6,12 +6,19 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/08 22:23:50 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/09 21:34:16 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/**
+ * Checks if input string contains only digits
+ * 
+ * @param argv String to check
+ *
+ * @return 0 if string contains only digits, 1 otherwise
+ */
 static int	check_input(char *argv)
 {
 	int	i;
@@ -44,6 +51,21 @@ static int	init_philos(t_table *table)
 	return (0);
 }
 
+/**
+ * Validates command line arguments for the philosophers program
+ * 
+ * @param argc Number of arguments to validate
+ * @param argv Array of string arguments to validate
+ * @param argv_ctrled Array to store the converted integer values
+ * 
+ * @return 0 if validation succeeds, 1 if any validation fails with error
+ *  message
+ *         Fails if:
+ *         - Any argument is not a valid number
+ *         - Any argument is negative
+ *         - Number of philosophers is 0
+ *         - Number of philosophers exceeds 200
+ */
 static int	check_args(int argc, char **argv, int *argv_ctrled)
 {
 	int	i;
@@ -68,6 +90,20 @@ static int	check_args(int argc, char **argv, int *argv_ctrled)
 	return (0);
 }
 
+/**
+ * Initialize semaphores for the philosopher program
+ * Creates and opens three named semaphores:
+ * - message_semaphore: Controls access to message printing (initialized to 1)
+ * - baguette: Represents available forks/chopsticks (initialized to number of
+ *  philosophers)
+ * - dead_status: Controls access to dead status checking (initialized to 1)
+ * 
+ * First unlinks any existing semaphores with same names to ensure clean state
+ * Then opens semaphores with specified initial values
+ *
+ * @param table Pointer to the table structure containing program data
+ * @return 0 on success, 1 if any semaphore creation fails
+ */
 static int	init_semaphors(t_table *table)
 {
 	sem_unlink("/message_semaphore");
@@ -94,6 +130,24 @@ static int	init_semaphors(t_table *table)
 	return (0);
 }
 
+/**
+ * @brief Initializes the dining philosophers table structure
+ *
+ * This function sets up the table structure with the parsed command line
+ *  arguments, initializes semaphores and philosophers data structures.
+ * It performs the following:
+ * - Validates command line arguments
+ * - Sets up table parameters (number of philosophers, time limits)
+ * - Initializes semaphores
+ * - Creates philosopher processes
+ * - Records start time
+ *
+ * @param table Pointer to the table structure to initialize
+ * @param argv Array of command line argument strings
+ * @param argc Number of command line arguments
+ *
+ * @return 0 on success, 1 on error
+ */
 int	init_table(t_table *table, char**argv, int argc)
 {
 	int	argvctrled[5];
