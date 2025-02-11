@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 17:12:49 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/09 21:36:57 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 20:18:35 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ int	is_alive(t_philo *philo)
 	{
 		sem_wait(philo->table->dead);
 		message(philo, RED"died"RESET);
-		release_fork(philo);
 		return (0);
 	}
 	return (1);

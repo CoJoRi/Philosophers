@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/09 21:44:23 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 20:16:39 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,11 @@ int	take_fork(t_philo *philo)
 	if (philo->table->nb_philo == 1 && philo->forks_in_hand == 1)
 	{
 		my_sleep(philo->table->time_die + 1, philo);
-		return (release_fork(philo), 1);
+		return (1);
 	}
 	sem_wait(philo->table->forks);
 	if (!is_alive(philo))
 	{
-		release_fork(philo);
 		exit (1);
 	}
 	philo->forks_in_hand++;
@@ -86,6 +85,9 @@ void	message(t_philo *philo, char *msg)
  */
 int	eat_philo(t_philo *philo)
 {
+	int		wait_eat;
+
+	wait_eat = 100000;
 	if (!is_alive(philo))
 		exit (1);
 	message(philo, GREEN"is eating"RESET);
@@ -95,6 +97,11 @@ int	eat_philo(t_philo *philo)
 	if (philo->nb_eat == philo->table->eat_limit)
 	{
 		release_fork(philo);
+		sem_wait(philo->table->message);
+		printf("philo %d a mange assez", philo->id);
+		sem_post(philo->table->message);
+		while (wait_eat)
+			wait_eat--;
 		exit (0);
 	}
 	release_fork(philo);
@@ -140,11 +147,10 @@ void	*to_be_or_not_to_be(void *arg)
 	while (1)
 	{
 		if (philo->id % 2 == 1)
-			my_sleep(1, philo);
+			message(philo, ORANGE"is thinking"RESET);
 		take_fork(philo);
 		if (!is_alive(philo))
 		{
-			release_fork(philo);
 			exit (1);
 		}
 		take_fork(philo);

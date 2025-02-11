@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/09 21:45:35 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 20:02:56 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,12 @@
 void	create_philosophers(t_table *table)
 {
 	int		i;
-	pid_t	pid;
 
 	i = 0;
 	while (i < table->nb_philo)
 	{
-		pid = fork();
-		if (pid == 0)
+		table->philos[i].pid = fork();
+		if (table->philos[i].pid == 0)
 			to_be_or_not_to_be(&table->philos[i]);
 		i++;
 	}
@@ -70,11 +69,11 @@ int	monitor_philosophers(t_table *table)
 		waitpid(-1, &status, 0);
 		if (WIFEXITED(status))
 		{
-			if (WEXITSTATUS(status) == 0)
-				all_eat++;
-			else if (WEXITSTATUS(status) == 1)
+			if (WEXITSTATUS(status) == 1)
 				return (printf("\n\t"BG_WHITE BLUE
-						" Someone died....RIP him " RESET "\n"), 1);
+						"Someone died....RIP him"RESET"\n"), 1);
+			else if (WEXITSTATUS(status) == 0)
+				all_eat++;
 		}
 		if (all_eat == table->nb_philo)
 			return (printf("\n\t"BG_WHITE BLUE
@@ -103,6 +102,18 @@ void	cleanup_resources(t_table *table)
 	sem_unlink("/message_semaphore");
 	sem_close(table->dead);
 	sem_unlink("/dead");
+}
+
+static void	terminate_philosophers(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->nb_philo)
+	{
+		kill(table->philos[i].pid, SIGKILL);
+		i++;
+	}
 }
 
 /**
@@ -134,7 +145,7 @@ int	main(int argc, char **argv)
 	printf(GREEN"\t|_____________________|\n"RESET);
 	create_philosophers(&table);
 	if (monitor_philosophers(&table))
-		kill(0, SIGINT);
+		terminate_philosophers(&table);
 	printf(GREEN"\t_______________________\n"RESET);
 	printf(GREEN"\t|  the dinner is over |\n"RESET);
 	printf(GREEN"\t|_____________________|\n"RESET);

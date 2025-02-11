@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/11 09:54:16 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:37:47 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,7 @@ void	*turn(void *arg)
 			think_philo(philo);
 		}
 	}
+	release_fork(philo);
 	return (NULL);
 }
 

@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 18:41:43 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 20:06:41 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:41:25 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,9 @@ int	eat_philo(t_philo *philo)
 			, pthread_mutex_unlock(&philo->table->status), 1);
 	pthread_mutex_unlock(&philo->table->status);
 	message(philo, GREEN"is eating"RESET);
+	pthread_mutex_lock(&philo->mut_last_meal);
 	philo->last_eat = get_time(philo);
+	pthread_mutex_unlock(&philo->mut_last_meal);
 	my_sleep(philo->time_eat);
 	pthread_mutex_lock(&philo->mut_last_meal);
 	philo->nb_eat++;
