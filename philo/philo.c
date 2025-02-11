@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/08 17:31:59 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/11 09:54:16 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ void	*turn(void *arg)
 	{
 		if (philo->id % 2)
 		{
+			think_philo(philo);
 			take_right_fork(philo);
 			take_left_fork(philo);
 		}
