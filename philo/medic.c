@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 12:44:51 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/11 19:37:22 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/12 13:37:07 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	*watch_table(void *arg)
 	{
 		while (i < table->nb_philo)
 		{
+			my_sleep(1);
 			pthread_mutex_lock(&table->status);
 			if (table->eat_max_ok == table->nb_philo)
 			{

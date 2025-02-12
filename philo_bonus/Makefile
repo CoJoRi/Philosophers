@@ -6,7 +6,7 @@
 #    By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/07 09:10:33 by jrinaudo          #+#    #+#              #
-#    Updated: 2025/02/08 17:15:56 by jrinaudo         ###   ########.fr        #
+#    Updated: 2025/02/12 11:15:58 by jrinaudo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,6 +49,9 @@ bonus:		all
 val:		${NAME}
 			@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) 4 410 200 200
 
+hel:		${NAME}
+			@valgrind --tool=helgrind ./$(NAME) 10 8000 100 100 10
+
 run:		${NAME}
 			@./$(NAME) $(ARGS)
 #to execute: make run ARGS="4 400 200 200"
@@ -66,4 +69,4 @@ fclean:		clean
 
 re:			fclean all
 
-.PHONY:		all clean fclean re bonus run gdb val
+.PHONY:		all clean fclean re bonus run gdb val hel
