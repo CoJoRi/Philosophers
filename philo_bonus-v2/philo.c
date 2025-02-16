@@ -6,11 +6,11 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 21:54:29 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/16 11:23:55 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/16 11:18:48 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 /**
  * @brief Attempt to take a fork for a philosopher
@@ -33,14 +33,18 @@ int	take_fork(t_philo *philo)
 {
 	if (philo->table->nb_philo == 1 && philo->forks_in_hand == 1)
 	{
-		my_sleep(philo->table->time_die + 1, philo);
+		my_sleep(philo->table->time_die + 1);
 		return (1);
 	}
 	sem_wait(philo->table->forks);
-	if (!is_alive(philo))
+	sem_wait(philo->table->status);
+	if (philo->table->finish == 1)
 	{
-		exit (1);
+		sem_post(philo->table->status);
+		sem_post(philo->table->forks);
+		return (1);
 	}
+	sem_post(philo->table->status);
 	philo->forks_in_hand++;
 	if (philo->forks_in_hand == 1)
 		message(philo, BLUE_LIGHT"has taken a fork"RESET);
@@ -65,37 +69,52 @@ int	take_fork(t_philo *philo)
 void	message(t_philo *philo, char *msg)
 {
 	sem_wait(philo->table->message);
+	sem_wait(philo->table->status);
+	if (philo->table->finish == 1)
+	{
+		sem_post(philo->table->status);
+		sem_post(philo->table->message);
+		return ;
+	}
+	sem_post(philo->table->status);
 	printf(""BG_WHITE GREY"%ld "BLUE"%d "RESET"%s\n",
 		get_time_elapsed(philo->table->time_start), philo->id, msg);
 	sem_post(philo->table->message);
 }
 
+
 /**
- * Makes a philosopher eat
- * The function handles the eating process of a philosopher
+ * Makes a philosopher eat.
+ * 
+ * @param philo Pointer to the philosopher structure
+ * 
+ * This function:
  * - Checks if philosopher is alive
  * - Displays eating message
  * - Updates last eating time
- * - Sleeps for eating duration
- * - Increments eating counter
- * - Releases forks after eating
+ * - Makes philosopher sleep for eating duration
+ * - Increments eat counter
+ * - Releases forks if eating limit reached
+ * - Always releases forks at the end
  * 
- * @param philo Pointer to philosopher structure
- * @return 0 on success, exits with 0 if eat limit reached, exits with 1 if dead
+ * @return 0 on success, exits with 1 if philosopher died
  */
 int	eat_philo(t_philo *philo)
 {
-	if (!is_alive(philo))
-		exit (1);
-	message(philo, GREEN"is eating"RESET);
-	philo->last_eat = clock();
-	my_sleep(philo->table->time_eat, philo);
-	philo->nb_eat++;
-	if (philo->nb_eat == philo->table->eat_limit)
+	sem_wait(philo->table->status);
+	if (philo->table->finish == 1)
 	{
-		release_fork(philo);
-		exit (0);
+		sem_post(philo->table->status);
+		return (1);
 	}
+	sem_post(philo->table->status);
+	message(philo, GREEN"is eating"RESET);
+	sem_wait(philo->table->status);
+	philo->last_eat = my_clock();
+	sem_post(philo->table->status);
+	my_sleep(philo->table->time_eat);
+	philo->nb_eat++;
+	//if (nb_eat)
 	release_fork(philo);
 	return (0);
 }
@@ -113,8 +132,15 @@ int	eat_philo(t_philo *philo)
  */
 void	sleep_philo(t_philo *philo)
 {
+	sem_wait(philo->table->status);
+	if (philo->table->finish == 1)
+	{
+		sem_post(philo->table->status);
+		return ;
+	}
+	sem_post(philo->table->status);
 	message(philo, YELLOW"is sleeping"RESET);
-	my_sleep(philo->table->time_sleep, philo);
+	my_sleep(philo->table->time_sleep);
 }
 
 /*
@@ -126,7 +152,7 @@ void	sleep_philo(t_philo *philo)
 ** @return: void pointer (NULL), but function exits process on completion
 **
 ** The function implements the following logic:
-** 1. Odd-numbered philosophers start by thinking to avoid deadlock
+** 1. Odd-numbered philosophers start by thinking to avoid sem_finishlock
 ** 2. Attempts to take forks (one at a time)
 ** 3. If philosopher has both forks, proceeds to eat, sleep, and think
 ** 4. Exits with status 1 if philosopher dies, 0 on normal termination
@@ -138,20 +164,24 @@ void	*to_be_or_not_to_be(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
+		sem_wait(philo->table->status);
+		if (philo->table->finish == 1)
+		{
+			sem_post(philo->table->status);
+			return (NULL);
+		}
+		sem_post(philo->table->status);
 		if (philo->id % 2 == 1)
 			message(philo, ORANGE"is thinking"RESET);
 		take_fork(philo);
-		if (!is_alive(philo))
-		{
-			exit (1);
-		}
 		take_fork(philo);
 		if (philo->forks_in_hand == 2)
 		{
 			eat_philo(philo);
 			sleep_philo(philo);
-			message(philo, ORANGE"is thinking"RESET);
+			if (philo->id % 2 == 0)
+				message(philo, ORANGE"is thinking"RESET);
 		}
 	}
-	exit (0);
+	return (NULL);
 }
