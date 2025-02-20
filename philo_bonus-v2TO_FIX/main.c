@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/16 11:13:45 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/16 12:21:09 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,8 @@ void	create_philosophers(t_table *table)
 		{
 			if (pthread_create(&table->philos[i].medic, NULL, life_monitor, &table->philos[i]))
 				pthread_cancel(table->philos[i].medic);
-			if (pthread_create(&table->philos[i].eat_mon, NULL, meal_monitor, &table->philos[i]))
-				pthread_cancel(table->philos[i].eat_mon);
+			pthread_detach(table->philos[i].medic);
 			to_be_or_not_to_be(&table->philos[i]);
-			pthread_join(table->philos[i].medic, NULL);
-			pthread_join(table->philos[i].eat_mon, NULL);	
 			exit(0);		
 		}
 		i++;
@@ -140,9 +137,6 @@ void *wait_all_finished(void *arg)
 	}
 	if (table->finish == 1)
 		return NULL;
-	sem_wait(table->message);
-	printf("\n\t"BG_WHITE BLUE " all have eaten " RESET "\n");
-	sem_post(table->message);
 	i = 0;
 	while (i < table->nb_philo)
 	{

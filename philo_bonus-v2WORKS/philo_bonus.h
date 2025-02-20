@@ -50,12 +50,13 @@ struct s_philo
 	int				id;
 	pid_t			pid;
 	long			last_eat;
+	long			next_eat;
 	int				nb_eat;
 	int				forks_in_hand;
 	int				eat_enough;
 	int				finish;
 	pthread_t		medic;
-	pthread_t		eat_mon;
+	pthread_t		stop_philo;
 	t_table			*table;
 };
 
@@ -70,10 +71,10 @@ struct s_table
 	int				eat_max_ok;
 	int				finish;
 	sem_t			*finish_eat;
-	sem_t			*status;
 	sem_t			*forks;
 	sem_t			*message;
 	sem_t			*sem_exit;
+	sem_t			*status;
 	t_philo			philos[200];
 };
 
@@ -111,7 +112,7 @@ void	release_fork(t_philo *philo);
 
 /*----------------------------------monitor.c---------------------------------*/
 void	*life_monitor(void *arg);
-void	*meal_monitor(void *arg);
+void	*stop_philo(void *arg);
 void    close_sem(t_philo *philo);
 int		is_alive(t_philo *philo);
 

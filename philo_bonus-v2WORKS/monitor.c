@@ -14,11 +14,12 @@
 
 void    close_sem(t_philo *philo)
 {
-	sem_close(philo->table->status);
 	sem_close(philo->table->forks);
 	sem_close(philo->table->message);
 	sem_close(philo->table->sem_exit);
 	sem_close(philo->table->finish_eat);
+	sem_close(philo->table->status);
+	//printf("close_sem [%d]\n", philo->id);
 }
 
 void	*life_monitor(void *arg)
@@ -28,18 +29,17 @@ void	*life_monitor(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
+		my_sleep(1);
 		sem_wait(philo->table->status);
-		if (philo->table->finish == 1)
+		if (my_clock() > philo->next_eat)
 		{
 			sem_post(philo->table->status);
-			return (NULL);
-		}
-		if ((my_clock() - philo->last_eat) > philo->table->time_die)
-		{
 			sem_wait(philo->table->message);
+			//message(philo, RED"died"RESET);
+			philo->finish = 1;
 			printf("%ld %d "RED"died\n"RESET, my_clock() - philo->table->time_start, philo->id);
-			close_sem(philo);
-			exit(1);
+			sem_post(philo->table->sem_exit);
+			my_sleep(5);
 			return (NULL);
 		}
 		sem_post(philo->table->status);
@@ -47,27 +47,18 @@ void	*life_monitor(void *arg)
 	return (NULL);
 }
 
-void *meal_monitor(void *arg)
+void *stop_philo(void *arg)
 {
 	t_philo *philo;
 
 	philo = (t_philo *)arg;
-	while (1)
-	{
-		my_sleep(1);
-		sem_wait(philo->table->status);
-		if (philo->nb_eat == philo->table->eat_limit)
-		{
-			sem_post(philo->table->finish_eat);
-			sem_post(philo->table->status);
-			sem_wait(philo->table->sem_exit);
-			sem_wait(philo->table->status);
-			philo->table->finish = 1;
-			sem_post(philo->table->status);
-			close_sem(philo);
-			return (NULL);
-		}
-		sem_post(philo->table->status);		
-	}
+	sem_wait(philo->table->sem_exit);
+	sem_wait(philo->table->status);
+	philo->finish = 1;
+	//sem_post(philo->table->message);
+	sem_post(philo->table->status);
+	//printf("stop_philo [%d]\n", philo->id);
+	//close_sem(philo);
+	//kill(philo->pid, SIGKILL);
 	return (NULL);
 }

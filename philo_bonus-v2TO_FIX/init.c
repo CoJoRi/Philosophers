@@ -6,7 +6,7 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:10:06 by zeph              #+#    #+#             */
-/*   Updated: 2025/02/16 11:13:42 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/02/16 12:02:58 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	init_philos(t_table *table)
 		table->philos[i].id = i;
 		table->philos[i].last_eat = my_clock();
 		table->philos[i].nb_eat = 0;
-		table->philos[i].finish = 0;
+		table->philos[i].dead = 0;
 		table->philos[i].forks_in_hand = 0;
 		table->philos[i].eat_enough = 0;
 		table->philos[i].table = table;
@@ -157,12 +157,11 @@ int	init_table(t_table *table, char**argv, int argc)
 	table->time_die = argvctrled[1];
 	table->time_eat = argvctrled[2];
 	table->time_sleep = argvctrled[3];
+	table->finish = 0;
 	if (argc == 5)
 		table->eat_limit = argvctrled[4];
 	else
 		table->eat_limit = -1;
-	table->finish = 0;
-	table->eat_max_ok = 0;
 	if (init_semaphors(table))
 		return (1);
 	if (init_philos(table))
