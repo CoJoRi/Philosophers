@@ -6,11 +6,11 @@
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:05:48 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/16 12:21:09 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/03/13 09:18:56 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_bonus.h"
+#include "philo.h"
 
 /**
  * Creates child processes for each philosopher at the table
@@ -32,13 +32,7 @@ void	create_philosophers(t_table *table)
 	{
 		table->philos[i].pid = fork();
 		if (table->philos[i].pid == 0)
-		{
-			if (pthread_create(&table->philos[i].medic, NULL, life_monitor, &table->philos[i]))
-				pthread_cancel(table->philos[i].medic);
-			pthread_detach(table->philos[i].medic);
 			to_be_or_not_to_be(&table->philos[i]);
-			exit(0);		
-		}
 		i++;
 	}
 }
@@ -62,28 +56,29 @@ void	create_philosophers(t_table *table)
  * WIFEXITED(status)	Vérifie si l'enfant s'est terminé avec exit().
  * WEXITSTATUS(status)	Récupère la valeur passée à exit()
  */
-static int	monitor_philosophers(t_table *table)
+int	monitor_philosophers(t_table *table)
 {
-	int	status;
 	int	i;
+	int	status;
+	int	all_eat;
 
 	i = 0;
-	waitpid(-1, &status, 0);
-	if (WIFEXITED(status))
+	all_eat = 0;
+	while (i < table->nb_philo)
 	{
-		if (WEXITSTATUS(status) == 1)
+		waitpid(-1, &status, 0);
+		if (WIFEXITED(status))
 		{
-			printf("\n\t"BG_WHITE BLUE"Someone died. RIP him"RESET"\n");
-			table->finish = 1;
-			while (i < table->nb_philo)
-			{
-				sem_post(table->finish_eat);
-				i++;
-			}
-			return (1);
+			if (WEXITSTATUS(status) == 1)
+				return (printf("\n\t"BG_WHITE BLUE
+						"Someone died....RIP him"RESET"\n"), 1);
+			else if (WEXITSTATUS(status) == 0)
+				all_eat++;
 		}
-		else if (WEXITSTATUS(status) == 0)
-			return (0);
+		if (all_eat == table->nb_philo)
+			return (printf("\n\t"BG_WHITE BLUE
+					" all have eat " RESET "\n"), 0);
+		i++;
 	}
 	return (0);
 }
@@ -102,15 +97,11 @@ static int	monitor_philosophers(t_table *table)
 void	cleanup_resources(t_table *table)
 {
 	sem_close(table->forks);
-	sem_close(table->message);
-	sem_close(table->finish_eat);
-	sem_close(table->sem_exit);
-	sem_close(table->status);
 	sem_unlink("/baguette");
+	sem_close(table->message);
 	sem_unlink("/message_semaphore");
-	sem_unlink("/finish eating");
-	sem_unlink("/exit");
-	sem_unlink("/status");
+	sem_close(table->dead);
+	sem_unlink("/dead");
 }
 
 static void	terminate_philosophers(t_table *table)
@@ -123,27 +114,6 @@ static void	terminate_philosophers(t_table *table)
 		kill(table->philos[i].pid, SIGKILL);
 		i++;
 	}
-}
-
-void *wait_all_finished(void *arg)
-{
-	t_table *table = (t_table *)arg;
-	int i = 0;
-
-	while (i < table->nb_philo)
-	{
-		sem_wait(table->finish_eat);
-		i++;
-	}
-	if (table->finish == 1)
-		return NULL;
-	i = 0;
-	while (i < table->nb_philo)
-	{
-		sem_post(table->sem_exit);
-		i++;
-	}
-	return NULL;
 }
 
 /**
@@ -165,7 +135,6 @@ void *wait_all_finished(void *arg)
 int	main(int argc, char **argv)
 {
 	t_table	table;
-	pthread_t finish_thread;
 
 	if (argc < 5)
 		return (write(2, "Error args -> need 4 minimum\n", 29), 1);
@@ -175,10 +144,11 @@ int	main(int argc, char **argv)
 	printf(GREEN"\t|     Bon Appetit     |\n"RESET);
 	printf(GREEN"\t|_____________________|\n"RESET);
 	create_philosophers(&table);
-	pthread_create(&finish_thread, NULL, (void *)wait_all_finished, &table);
 	if (monitor_philosophers(&table))
+	{
+		cleanup_resources(&table);
 		terminate_philosophers(&table);
-	pthread_join(finish_thread, NULL);
+	}
 	printf(GREEN"\t_______________________\n"RESET);
 	printf(GREEN"\t|  the dinner is over |\n"RESET);
 	printf(GREEN"\t|_____________________|\n"RESET);

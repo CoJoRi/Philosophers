@@ -1,16 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor.c                                            :+:      :+:    :+:   */
+/*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jrinaudo <jrinaudo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 08:26:16 by jrinaudo          #+#    #+#             */
-/*   Updated: 2025/02/15 11:34:28 by jrinaudo         ###   ########.fr       */
+/*   Updated: 2025/03/13 09:49:34 by jrinaudo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
+
+/**
+ * a termoner pour fonctionner ajouter un nmonitoring dans les forkj qui attend
+ *  le semwait de finished, quand tous les  onde a mange + gerer la fermeture du
+ *  thread monitoring avant de quitter
+ * 
+ * 
+ */
 
 void    close_sem(t_philo *philo)
 {
